@@ -1,11 +1,11 @@
 import pandas as pandas
+import numpy as numpy
 from pandas import read_csv
 from matplotlib import pyplot
-import numpy as numpy
-
-
-def print_hi(name):
-    print(f'Hi, {name}')
+from scipy.fftpack import fft
+from scipy import signal
+import pywt
+import pywt.data
 
 
 # №1
@@ -33,6 +33,33 @@ def plot_autocorrelation_plot(ser):
     pyplot.show()
 
 
+# №5
+def plot_fur_window(ser):
+    X = fft(ser)
+    N = len(X)
+    n = numpy.arange(N)
+    # get the sampling rate
+    sr = 1 / (60 * 60)
+    T = N / sr
+    freq = n / T
+
+    # Get the one-sided specturm
+    n_oneside = N // 2
+    # get the one side frequency
+    f_oneside = freq[:n_oneside]
+
+    # pyplot.figure(figsize=(60, 12))
+    pyplot.plot(f_oneside, numpy.abs(X[:n_oneside]), 'b')
+    pyplot.show()
+
+
+# № 6
+def plot_wavelet_haar(ser):
+    cA, cD = pywt.dwt(ser, "haar")
+    pyplot.plot(cA, label="approximation coefficients")
+    pyplot.show()
+
+
 def csv_check(ser):
     print(type(ser))
     print(ser.head())
@@ -49,3 +76,5 @@ if __name__ == '__main__':
     # print_dispersion(series)
     # print_scope(series)
     # plot_autocorrelation_plot(series)
+    # plot_fur_window(series)
+    # plot_wavelet_haar(series)
