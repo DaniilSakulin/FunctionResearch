@@ -59,6 +59,11 @@ def plot_wavelet_haar(ser):
     pyplot.plot(cA, label="approximation coefficients")
     pyplot.show()
 
+def plot_filtered_signal(ser):
+    cA1, cD1 = pywt.dwt(ser, "db2", "smooth")
+    r_signal = pywt.idwt(cA1, cD1, 'db2', 'smooth')
+    pyplot.plot(r_signal)
+    pyplot.show()
 
 def csv_check(ser):
     print(type(ser))
@@ -78,3 +83,4 @@ if __name__ == '__main__':
     # plot_autocorrelation_plot(series)
     # plot_fur_window(series)
     # plot_wavelet_haar(series)
+    # plot_filtered_signal(series)
