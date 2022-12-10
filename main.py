@@ -1,10 +1,10 @@
 import pandas as pandas
 import numpy as numpy
+import scipy.fft
 from numpy import nanmax
 from pandas import read_csv
 from matplotlib import pyplot
 from scipy.fftpack import fft
-from scipy import signal
 import pywt
 import pywt.data
 
@@ -61,7 +61,7 @@ def plot_wavelet_haar(ser):
     pyplot.show()
 
 
-# № 7
+# № 8
 def plot_filtered_signal(ser):
     thresh = 0.6 * nanmax(ser)
     wavelet = "bior4.4"
@@ -73,18 +73,31 @@ def plot_filtered_signal(ser):
     pyplot.show()
 
 
-# № 8
-def plot_recovered_signal(ser):
-    r_signal = get_recovered_signal(ser)
+# № 9
+def plot_recovered_signal(r_signal):
     pyplot.plot(r_signal)
     pyplot.show()
-    return pandas.DataFrame(r_signal)
+
+
+# № 10
+def print_signal_diff(ser_old, ser_rec):
+    print(ser_old.std())
+    print(ser_rec[dataset_name].std(ddof=10))
+
+
+def print_recovered_v2():
+    t = scipy.fft.fft(recovered_series)
+    pyplot.plot(t)
+    pyplot.show()
 
 
 def get_recovered_signal(ser):
     c_a, c_d = pywt.dwt(ser, "db2", "smooth")
     r_signal = pywt.idwt(c_a, c_d, 'db2', 'smooth')
-    return pandas.DataFrame(r_signal)
+    # return pandas.Series(pandas.DataFrame(r_signal).values[:, 1], name=dataset_name)
+    r_df = pandas.DataFrame(r_signal)
+    r_df.columns = ["dots", dataset_name]
+    return r_df
 
 
 def csv_check(ser):
@@ -97,13 +110,16 @@ def csv_check(ser):
 if __name__ == '__main__':
     filename = "a-wearable-exam-stress-dataset-for-predicting-cognitive-performance-in-real-world-settings-1.0.0" \
                "/Data/S9/Final/IBI.csv"
-    series = read_csv(filename, header=0, index_col=0)
-    # csv_check(series)
-    # print_mathematical_expected_value(series)
-    # print_dispersion(series)
-    # print_scope(series)
-    # plot_autocorrelation_plot(series)
-    # plot_fur_window(series)
-    # plot_wavelet_haar(series)
-    # plot_filtered_signal(series)
-    plot_recovered_signal(series)
+    dataset_name = "Dataset"
+    series = read_csv(filename, header=0, index_col=0, names=[dataset_name])
+    recovered_series = get_recovered_signal(series)
+    csv_check(series)
+    print_mathematical_expected_value(series)
+    print_dispersion(series)
+    print_scope(series)
+    plot_autocorrelation_plot(series)
+    plot_fur_window(series)
+    plot_wavelet_haar(series)
+    plot_filtered_signal(series)
+    plot_recovered_signal(recovered_series)
+    print_signal_diff(series, recovered_series)
